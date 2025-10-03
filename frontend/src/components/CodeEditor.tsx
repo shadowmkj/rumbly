@@ -4,17 +4,24 @@ import Editor from 'react-simple-code-editor';
 import { highlight, languages } from 'prismjs';
 import 'prismjs/components/prism-nasm'; // Import the NASM language component
 import 'prismjs/themes/prism.css'; // Import the Prism.js default theme CSS
+import 'prismjs/themes/prism.css'; // A dark theme that works well in dark mode
+import FontAdjust from './font-adjust';
+import { cn } from '@/lib/utils';
+
 
 const CodeEditor: React.FC = () => {
   const [code, setCode] = useState('');
-  const [apiResponse, setApiResponse] = useState<string | null>(null);
+  const [output, setOutput] = useState<string | null>(null);
+  const [stdError, setStdError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [fontSize, setFontSize] = useState(16)
 
   const highlightCode = (code: string) => highlight(code, languages.nasm, 'nasm');
 
   const handleSendCode = async () => {
     setLoading(true);
-    setApiResponse(null);
+    setOutput(null);
+    setStdError(null);
     try {
       const response = await fetch('http://localhost:3000/run', {
         method: 'POST',
@@ -26,9 +33,12 @@ const CodeEditor: React.FC = () => {
         }),
       });
       const data = await response.json();
-      setApiResponse(JSON.stringify(data));
+      setOutput(data.output);
+      if (data.errors.length > 0) {
+        setStdError(data.errors)
+      }
     } catch (error) {
-      setApiResponse(`Error: ${error instanceof Error ? error.message : String(error)}`);
+      setStdError(`${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setLoading(false);
     }
@@ -36,6 +46,7 @@ const CodeEditor: React.FC = () => {
 
   return (
     <div className="relative p-4 border rounded-lg shadow-sm">
+      <FontAdjust currentFontSize={fontSize} setFont={setFontSize} />
       <Editor
         value={code}
         onValueChange={setCode}
@@ -44,9 +55,8 @@ const CodeEditor: React.FC = () => {
         textareaClassName="focus:outline-none"
         style={{
           fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 14,
-          backgroundColor: '#f5f2f0',
-          minHeight: '200px',
+          fontSize: fontSize,
+          minHeight: '500px',
           overflow: 'auto',
           borderRadius: '0.5rem',
           border: '1px solid hsl(240 5% 64.9%)',
@@ -60,13 +70,15 @@ const CodeEditor: React.FC = () => {
         {loading ? 'Sending...' : 'Send to API'}
       </Button>
 
-      {apiResponse && (
-        <div className="mt-4 p-3 bg-gray-100 rounded-md overflow-auto text-sm">
-          <h3 className="font-semibold mb-2">API Response:</h3>
-          <pre className="whitespace-pre-wrap break-all">{apiResponse}</pre>
+      {(output || stdError) && (
+        <div className={cn("mt-4 p-3 bg-secondary border-[1px] rounded-md overflow-auto text-sm", { "border-destructive": stdError })}>
+          <pre className="whitespace-pre-wrap break-all">{output}</pre>
+          {stdError &&
+            <pre className="whitespace-pre-wrap break-all">{stdError}</pre>}
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 

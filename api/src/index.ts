@@ -30,20 +30,25 @@ app.post('/run', async (req, res) => {
         return res.status(500).send('Error saving data.');
       }
     });
-    const dockerCommand = `docker run --rm -v ./:/app --memory=100m --cpus=0.5 --name rumbly-runner rumbly-runner:latest sh -c 'nasm -f elf64 -o ${uuid}.o ${uuid}.asm && ld -o ${uuid} ${uuid}.o && ./${uuid}'`;
+    res.json({
+      output: "Output from NASM",
+      errors: "YESS"
+    })
+    // const dockerCommand = `docker run --rm -v ./:/app --memory=100m --cpus=0.5 --name rumbly-runner-${uuid} rumbly-runner:latest sh -c 'nasm -f elf64 -o ${uuid}.o ${uuid}.asm && ld -o ${uuid} ${uuid}.o && ./${uuid}'`;
 
-    exec(dockerCommand, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return res.status(500).json({
-          error: stderr
-        })
-      }
-      res.status(200).json({
-        output: stdout,
-        errors: stderr
-      });
-    });
+
+    // exec(dockerCommand, (error, stdout, stderr) => {
+    //   if (error) {
+    //     console.error(`exec error: ${error}`);
+    //     return res.status(500).json({
+    //       errors: stderr
+    //     })
+    //   }
+    //   res.status(200).json({
+    //     output: stdout,
+    //     errors: stderr
+    //   });
+    // });
   } catch (error) {
     console.error('Error writing to file:', error);
     res.status(500).send('Internal Server Error: Could not write data to file.');

@@ -43,7 +43,7 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background:#fffdf5;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -117,4 +117,86 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Added PrismJS dark theme overrides */
+.dark code[class*="language-"],
+.dark pre[class*="language-"] {
+	color: #ccc;
+	text-shadow: none;
+}
+
+.dark .token.comment,
+.dark .token.block-comment,
+.dark .token.prolog,
+.dark .token.doctype,
+.dark .token.cdata {
+	color: #999;
+}
+
+.dark .token.punctuation {
+	color: #ccc;
+}
+
+.dark .token.tag,
+.dark .token.attr-name,
+.dark .token.namespace,
+.dark .token.deleted {
+	color: #e2777a;
+}
+
+.dark .token.function-name {
+	color: #6196cc;
+}
+
+.dark .token.boolean,
+.dark .token.number,
+.dark .token.function {
+	color: #f08d49;
+}
+
+.dark .token.property,
+.dark .token.class-name,
+.dark .token.constant,
+.dark .token.symbol {
+	color: #f8c555;
+}
+
+.dark .token.selector,
+.dark .token.important,
+.dark .token.atrule,
+.dark .token.keyword,
+.dark .token.builtin {
+	color: #cc99cd;
+}
+
+.dark .token.string,
+.dark .token.char,
+.dark .token.attr-value,
+.dark .token.regex,
+.dark .token.variable {
+	color: #7ec699;
+}
+
+.dark .token.operator,
+.dark .token.entity,
+.dark .token.url {
+	color: #67cdcc;
+  background: #000
+}
+
+.dark .token.important,
+.dark .token.bold {
+	font-weight: bold;
+}
+.dark .token.italic {
+	font-style: italic;
+}
+
+.dark .token.entity {
+	cursor: help;
+}
+
+.dark .token.inserted {
+	color: green;
 }
