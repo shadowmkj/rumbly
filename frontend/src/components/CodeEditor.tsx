@@ -23,7 +23,7 @@ const CodeEditor: React.FC = () => {
     setOutput(null);
     setStdError(null);
     try {
-      const response = await fetch('http://localhost:3000/run', {
+      const response = await fetch('https://api.codenik.in/run', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
