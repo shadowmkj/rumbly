@@ -1,17 +1,23 @@
-import React, { useState } from 'react';
-import { Button } from '../components/ui/button';
-import Editor from 'react-simple-code-editor';
+import { cn } from '@/lib/utils';
 import { highlight, languages } from 'prismjs';
 import 'prismjs/components/prism-nasm'; // Import the NASM language component
 import 'prismjs/themes/prism.css'; // Import the Prism.js default theme CSS
-import 'prismjs/themes/prism.css'; // A dark theme that works well in dark mode
+import React, { useState } from 'react';
+import Editor from 'react-simple-code-editor';
+import { Button } from '../components/ui/button';
 import FontAdjust from './font-adjust';
-import { cn } from '@/lib/utils';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 
+interface CodeEditorProps {
+  sendCode: (code: string) => void;
+  outputArr: string[];
+  clearOutput: () => void;
+}
 
-const CodeEditor: React.FC = () => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ sendCode, outputArr, clearOutput }) => {
   const [code, setCode] = useState('');
-  const [output, setOutput] = useState<string | null>(null);
+  const [input, setInput] = useState("")
   const [stdError, setStdError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [fontSize, setFontSize] = useState(16)
@@ -20,29 +26,10 @@ const CodeEditor: React.FC = () => {
 
   const handleSendCode = async () => {
     setLoading(true);
-    setOutput(null);
     setStdError(null);
-    try {
-      const response = await fetch('https://api.codenik.in/run', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: code
-        }),
-      });
-      const data = await response.json();
-      setOutput(data.output);
-      if (data.errors.length > 0) {
-        setStdError(data.errors)
-      }
-    } catch (error) {
-      setStdError(`${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+    sendCode(code);
+    setLoading(false);
+  }
 
   return (
     <div className="relative p-4 border rounded-lg shadow-sm">
@@ -69,14 +56,21 @@ const CodeEditor: React.FC = () => {
       >
         {loading ? 'Sending...' : 'Send to API'}
       </Button>
-
-      {(output || stdError) && (
-        <div className={cn("mt-4 p-3 bg-secondary border-[1px] rounded-md overflow-auto text-sm", { "border-destructive": stdError })}>
-          <pre className="whitespace-pre-wrap break-all">{output}</pre>
-          {stdError &&
-            <pre className="whitespace-pre-wrap break-all">{stdError}</pre>}
-        </div>
-      )
+      <div className='flex gap-2 my-4'>
+        <Label>Input:</Label>
+        <Input value={input} onChange={(e) => setInput(e.target.value)} />
+        <Button variant={'outline'} onClick={handleSendCode} disabled={!input.trim() || loading}>Send</Button>
+        <Button variant={'secondary'} onClick={clearOutput}>Clear</Button>
+      </div>
+      {
+        (outputArr.length || stdError) && (
+          <div className={cn("mt-4 p-3 bg-secondary border-[1px] rounded-md overflow-auto text-sm", { "border-destructive": stdError })}>
+            {outputArr.map((out, index) => <pre key={index} className="whitespace-pre-wrap break-all">{out}</pre>
+            )}
+            {stdError &&
+              <pre className="whitespace-pre-wrap break-all">{stdError}</pre>}
+          </div>
+        )
       }
     </div >
   );
