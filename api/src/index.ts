@@ -58,6 +58,7 @@ wss.on('connection', (ws: WebSocket) => {
 
         childProcess.stderr.on('data', (data: Buffer) => {
           ws.send(`[CONTAINER STDERR]: ${data.toString()}`);
+          // ws.close()
         });
 
         childProcess.on('close', (code: number | null) => {
