@@ -40,11 +40,12 @@ wss.on('connection', (ws: WebSocket) => {
         const dockerCommand = 'docker';
         const dockerArgs = [
           'run',
+          `--name ${uuid}-container`,
           '--rm',                     // Automatically remove the container when it exits
           '-i',                       // Crucial for interactivity: keeps STDIN open
           '--network=none',           // Disable networking for security
-          `--memory=128m`,            // Set a 128MB memory limit
-          `--cpus=0.5`,               // Limit to half a CPU core
+          `--memory=64m`,            // Set a 128MB memory limit
+          `--cpus=0.3`,               // Limit to half a CPU core
           `-v`, `${tempDir}:/app`,    // Mount the temp directory into the container
           'rumbly-runner',            // The image to use
           'sh', '-c', `nasm -f elf64 ${uuid}.asm -o ${uuid}.o && ld -m elf_x86_64 ${uuid}.o -o ${uuid} && ./${uuid}`
@@ -81,14 +82,34 @@ wss.on('connection', (ws: WebSocket) => {
     console.log('Client disconnected');
     if (childProcess) {
       childProcess.kill();
+      exec(`docker rm -f ${uuid}-container`, (err) => {
+        if (err) {
+          console.error(`Failed to remove Docker container ${uuid}-container:`, err);
+        } else {
+          console.log(`Docker container ${uuid}-container removed.`);
+        }
+      });
     }
     if (tempDir) {
-      // fs.rmSync(tempDir, { recursive: true, force: true });
+      fs.rmSync(tempDir, { recursive: true, force: true });
     }
   });
 
   ws.on('error', (err: Error) => {
     console.error('WebSocket error:', err);
+    if (childProcess) {
+      childProcess.kill();
+      exec(`docker rm -f ${uuid}-container`, (err) => {
+        if (err) {
+          console.error(`Failed to remove Docker container ${uuid}-container:`, err);
+        } else {
+          console.log(`Docker container ${uuid}-container removed.`);
+        }
+      });
+    }
+    if (tempDir) {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 });
 app.post('/run', async (req, res) => {
