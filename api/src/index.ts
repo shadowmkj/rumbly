@@ -4,7 +4,6 @@ import { randomUUID } from 'crypto';
 import http from 'http'
 import path from 'path';
 import fs from 'fs'
-import os from 'os';
 import { ChildProcessWithoutNullStreams, exec, spawn } from 'child_process';
 import { RawData, WebSocket, WebSocketServer } from 'ws';
 const app: Express = express();
@@ -23,6 +22,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 wss.on('connection', (ws: WebSocket) => {
+  const uuid = randomUUID()
   console.log('Client connected');
   let hasReceivedCode = false;
   let childProcess: ChildProcessWithoutNullStreams | null = null;
@@ -35,7 +35,7 @@ wss.on('connection', (ws: WebSocket) => {
 
       try {
         tempDir = path.join(__dirname, '..', 'nasm')
-        const asmPath = path.join(tempDir, 'main.asm');
+        const asmPath = path.join(tempDir, `${uuid}.asm`);
         fs.writeFileSync(asmPath, code);
         const dockerCommand = 'docker';
         const dockerArgs = [
@@ -47,7 +47,7 @@ wss.on('connection', (ws: WebSocket) => {
           `--cpus=0.5`,               // Limit to half a CPU core
           `-v`, `${tempDir}:/app`,    // Mount the temp directory into the container
           'rumbly-runner',            // The image to use
-          'sh', '-c', 'nasm -f elf64 main.asm -o main.o && ld -m elf_x86_64 main.o -o main && ./main'
+          'sh', '-c', `nasm -f elf64 ${uuid}.asm -o ${uuid}.o && ld -m elf_x86_64 ${uuid}.o -o ${uuid} && ./${uuid}`
         ];
 
         childProcess = spawn(dockerCommand, dockerArgs);
@@ -57,8 +57,8 @@ wss.on('connection', (ws: WebSocket) => {
         });
 
         childProcess.stderr.on('data', (data: Buffer) => {
-          ws.send(`[CONTAINER STDERR]: ${data.toString()}`);
-          // ws.close()
+          ws.send(`stderr: ${data.toString()}`);
+          ws.close()
         });
 
         childProcess.on('close', (code: number | null) => {

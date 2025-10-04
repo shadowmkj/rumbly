@@ -9,12 +9,12 @@ import FontAdjust from "./font-adjust";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-const CodeEditor: React.FC = ({}) => {
+const CodeEditor: React.FC = ({ }) => {
   const [outputArr, setOutputArr] = useState<string[]>([]);
   const websocket = useRef<WebSocket | null>(null);
 
   const connect = () => {
-    websocket.current = new WebSocket("ws://localhost:3000");
+    websocket.current = new WebSocket("wss://api.codenik.in");
 
     websocket.current.onopen = () => {
       console.log("WebSocket connected");
