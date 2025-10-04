@@ -40,7 +40,8 @@ wss.on('connection', (ws: WebSocket) => {
         const dockerCommand = 'docker';
         const dockerArgs = [
           'run',
-          `--name ${uuid}-container`,
+          `--name`,
+          `${uuid}-container`,
           '--rm',                     // Automatically remove the container when it exits
           '-i',                       // Crucial for interactivity: keeps STDIN open
           '--network=none',           // Disable networking for security
@@ -91,7 +92,7 @@ wss.on('connection', (ws: WebSocket) => {
       });
     }
     if (tempDir) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
+      // fs.rmSync(tempDir, { recursive: true, force: true });
     }
   });
 
