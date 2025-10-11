@@ -1,0 +1,34 @@
+# [package]
+# name = "rust_api"
+# version = "0.1.0"
+# edition = "2024"
+#
+# [dependencies]
+# tokio = { version = "1", features = ["full"] }
+# warp = "0.3"
+# tokio-tungstenite = "0.21"
+# futures-util = { version = "*" }
+# tempfile = "3"
+# uuid = { version = "1.18.1", features = ["v4"] }
+#
+# [target.x86_64-unknown-linux-gnu]
+# linker = "x86_64-linux-gnu-gcc"
+
+
+[package]
+name = "rust_api"
+version = "0.1.0"
+edition = "2021" # Corrected: Changed from 2024 to the latest stable edition
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+warp = "0.3"
+tokio-tungstenite = "0.21"
+# Corrected: Pinned to a specific, compatible version
+futures-util = { version = "0.3" }
+# The tempfile crate is not needed for the version that writes to a local ./runs directory
+# tempfile = "3"
+# Corrected: Pinned to a recent, valid version
+uuid = { version = "1.8.0", features = ["v4"] }
+
+# This section is correct
