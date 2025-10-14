@@ -14,7 +14,7 @@ const CodeEditor: React.FC = ({ }) => {
   const websocket = useRef<WebSocket | null>(null);
 
   const connect = () => {
-    websocket.current = new WebSocket("wss://dev.codenik.in/ws");
+    websocket.current = new WebSocket("wss://api.codenik.in");
 
     websocket.current.onopen = () => {
       console.log("WebSocket connected");
