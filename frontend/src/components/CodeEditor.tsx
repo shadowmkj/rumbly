@@ -107,7 +107,7 @@ const CodeEditor: React.FC = ({ }) => {
         disabled={!code.trim() || loading}
         className="mt-4 w-full"
       >
-        {loading ? "Sending..." : "Send to API"}
+        {loading ? "Sending..." : "Run 🚀"}
       </Button>
       <div className="flex gap-2 my-4">
         <Label>Input:</Label>
