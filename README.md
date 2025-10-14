@@ -1,6 +1,6 @@
 # Rumbly (Run Assembly) NASM Assembly Execution Web Platform
 
-![Rumbly Banner](https://via.placeholder.com/1200x300.png?text=Rumbly+Assembly+Platform)
+![Rumbly Banner](https://rumbly.codenik.in/logo.png)
 
 [![Build Status](https://img.shields.io/travis/com/IamShaDoW666/rumbly.svg?style=for-the-badge)](https://travis-ci.com/IamShaDoW666/rumbly)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
