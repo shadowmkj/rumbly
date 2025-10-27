@@ -7,7 +7,7 @@ import FontAdjust from "./font-adjust";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-const CodeEditor: React.FC = ({ }) => {
+const CodeEditor: React.FC = () => {
   const [outputArr, setOutputArr] = useState<string[]>([]);
   const websocket = useRef<WebSocket | null>(null);
 
@@ -82,52 +82,63 @@ const CodeEditor: React.FC = ({ }) => {
   };
 
   return (
-    <div className="relative p-4 border rounded-lg shadow-sm">
-      <FontAdjust currentFontSize={fontSize} setFont={setFontSize} />
-      <MonacoEditor
-        value={code}
-        onChange={setCode}
-        fontSize={fontSize}
-        height={500}
-      />
-      <Button
-        onClick={handleSendCode}
-        disabled={!code.trim() || loading}
-        className="mt-4 w-full"
-      >
-        {loading ? "Sending..." : "Run 🚀"}
-      </Button>
-      <div className="flex gap-2 my-4">
-        <Label>Input:</Label>
-        <Input value={input} onChange={(e) => setInput(e.target.value)} />
-        <Button
-          variant={"outline"}
-          onClick={handleSendMessage}
-          disabled={!input.trim() || loading}
-        >
-          Send
-        </Button>
-        <Button variant={"secondary"} onClick={clearOutput}>
-          Clear
-        </Button>
+    <div className="h-[80vh] flex flex-col md:flex-row gap-4">
+      {/* Left Pane: Editor */}
+      <div className="md:w-3/5 w-full border rounded pr-3 pt-3 pl-0 min-h-0 mb-18">
+        <FontAdjust currentFontSize={fontSize} setFont={setFontSize} />
+        <MonacoEditor
+          value={code}
+          onChange={setCode}
+          fontSize={fontSize}
+          height="100%"
+        />
       </div>
-      {(outputArr.length || stdError) && (
-        <div
-          className={cn(
-            "mt-4 p-3 bg-secondary border-[1px] rounded-md overflow-auto text-sm",
-            { "border-destructive": stdError }
-          )}
-        >
-          {outputArr.map((out, index) => (
-            <pre key={index} className="whitespace-pre-wrap break-all">
-              {out}
-            </pre>
-          ))}
-          {stdError && (
-            <pre className="whitespace-pre-wrap break-all">{stdError}</pre>
-          )}
+      {/* Right Pane: Controls and Output */}
+      <div className="md:w-2/5 w-full flex flex-col gap-3 min-h-0">
+        {/* Controls Row */}
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleSendCode}
+            disabled={!code.trim() || loading}
+            className="flex-1"
+          >
+            {loading ? "Sending..." : "Run 🚀"}
+          </Button>
         </div>
-      )}
+        {/* Input Row */}
+        <div className="flex gap-2">
+          <Label>Input:</Label>
+          <Input value={input} onChange={(e) => setInput(e.target.value)} className="flex-1" />
+          <Button
+            variant={"outline"}
+            onClick={handleSendMessage}
+            disabled={!input.trim() || loading}
+          >
+            Send
+          </Button>
+          <Button variant={"secondary"} onClick={clearOutput}>
+            Clear
+          </Button>
+        </div>
+        {/* Output Area */}
+        {(outputArr.length || stdError) && (
+          <div
+            className={cn(
+              "flex-1 overflow-auto p-3 bg-secondary border-[1px] rounded-md text-sm",
+              { "border-destructive": stdError }
+            )}
+          >
+            {outputArr.map((out, index) => (
+              <pre key={index} className="whitespace-pre-wrap break-all">
+                {out}
+              </pre>
+            ))}
+            {stdError && (
+              <pre className="whitespace-pre-wrap break-all">{stdError}</pre>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
