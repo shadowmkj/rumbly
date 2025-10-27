@@ -1,9 +1,7 @@
 import { cn } from "@/lib/utils";
-import { highlight, languages } from "prismjs";
-import "prismjs/components/prism-nasm"; // Import the NASM language component
-import "prismjs/themes/prism.css"; // Import the Prism.js default theme CSS
+// Monaco replaces Prism for syntax highlighting; using MonacoEditor wrapper
 import React, { useEffect, useRef, useState } from "react";
-import Editor from "react-simple-code-editor";
+import MonacoEditor from "./MonacoEditor";
 import { Button } from "../components/ui/button";
 import FontAdjust from "./font-adjust";
 import { Input } from "./ui/input";
@@ -62,8 +60,7 @@ const CodeEditor: React.FC = ({ }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fontSize, setFontSize] = useState(16);
 
-  const highlightCode = (code: string) =>
-    highlight(code, languages.nasm, "nasm");
+
 
   const handleSendCode = async () => {
     setLoading(true);
@@ -87,20 +84,11 @@ const CodeEditor: React.FC = ({ }) => {
   return (
     <div className="relative p-4 border rounded-lg shadow-sm">
       <FontAdjust currentFontSize={fontSize} setFont={setFontSize} />
-      <Editor
+      <MonacoEditor
         value={code}
-        onValueChange={setCode}
-        highlight={highlightCode}
-        padding={10}
-        textareaClassName="focus:outline-none"
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: fontSize,
-          minHeight: "500px",
-          overflow: "auto",
-          borderRadius: "0.5rem",
-          border: "1px solid hsl(240 5% 64.9%)",
-        }}
+        onChange={setCode}
+        fontSize={fontSize}
+        height={500}
       />
       <Button
         onClick={handleSendCode}

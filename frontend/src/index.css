@@ -200,3 +200,11 @@
 .dark .token.inserted {
 	color: green;
 }
+
+/* Monaco Editor background uses Tailwind background */
+.monaco-editor,
+.monaco-editor .margin,
+.monaco-editor .monaco-editor-background,
+.monaco-editor .inputarea.ime-input {
+  background-color: var(--background) !important;
+}
