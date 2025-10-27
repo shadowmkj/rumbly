@@ -8,6 +8,7 @@ type Props = {
   onChange: (v: string) => void;
   fontSize: number;
   height?: string | number;
+  onRun?: () => void;
 };
 
 const MonacoEditor = ({ value, onChange, fontSize, height = 500 }: Props) => {
@@ -35,7 +36,6 @@ const MonacoEditor = ({ value, onChange, fontSize, height = 500 }: Props) => {
     const isDark = document.documentElement.classList.contains("dark");
     const themeName = isDark ? "tailwind-dark" : "tailwind-light";
     const base = isDark ? "vs-dark" : "vs";
-
     const computedBg = getComputedStyle(document.body).backgroundColor;
     const bg = toHex(computedBg, isDark ? "#1e1e1e" : "#ffffff");
 
@@ -77,40 +77,30 @@ const MonacoEditor = ({ value, onChange, fontSize, height = 500 }: Props) => {
       tokenizer: {
         root: [
           { include: "@whitespace" },
-
           [/;.*$/, "comment"],
-
           // Preprocessor-style directives starting with '%'
           [/%[a-zA-Z_][\w]*/, "keyword"],
-
           // Labels (e.g., start:, .L1:)
           [/[A-Za-z_.$][\w.$]*\s*:/, "type.identifier"],
-
           // Registers (x86/x64 + XMM/YMM/ZMM, and common ones)
           [/\b(?:r(?:1[0-5]|[0-9])|e?[abcd]x|e?[sd]i|e?[sb]p|[abcd][hl]|xmm(?:1[0-5]|[0-9])|ymm(?:[12]?[0-9]|3[01])|zmm(?:[12]?[0-9]|3[01])|cr[0-8]|dr[0-7])\b/, "variable.predefined"],
-
           // Size specifiers
           [/\b(?:byte|word|dword|qword|tword|oword|yword|zword)\b/, "type"],
-
           // Numbers
           [/\b0x[0-9a-fA-F]+\b/, "number.hex"],
           [/\b[0-9A-F]+h\b/, "number.hex"],
           [/\b[01]+b\b/, "number.binary"],
           [/\b[0-7]+o\b/, "number.octal"],
           [/\b-?\d+\b/, "number"],
-
           // Strings and character constants
           [/'([^'\\]|\\.)'/, "string"],
           [/"([^"\\]|\\.)*"/, "string"],
-
           // Identifiers/instructions/directives
           [/[A-Za-z_.$][\w.$]*/, { cases: { "@keywords": "keyword", "@directives": "keyword", "@default": "identifier" } }],
-
           // Delimiters & operators
           [/[,.:\[\]()]/, "delimiter"],
           [/[-+*/%]/, "operator"],
         ],
-
         whitespace: [
           [/\s+/, "white"],
         ],
