@@ -134,6 +134,8 @@ const MonacoEditor = ({ value, onChange, fontSize, height = 500 }: Props) => {
         wordWrap: "on",
         scrollBeyondLastLine: false,
         automaticLayout: true,
+        dragAndDrop: false,
+        mouseWheelZoom: false,
       }}
       onMount={onMount}
     />

@@ -107,17 +107,22 @@ const CodeEditor: React.FC = () => {
     return (
         <div className="h-[80vh] flex flex-col md:flex-row gap-4">
             {/* Left Pane: Editor */}
-            <div className="md:w-3/5 w-full border rounded pr-3 pt-3 pl-0 min-h-0 mb-18">
-                <FontAdjust currentFontSize={fontSize} setFont={setFontSize} />
+            <div className="h-3/4 md:h-auto md:w-3/5 w-full border rounded pr-3 pt-3 pl-0 min-h-0">
+                <div className="flex items-center justify-between mb-2">
+                    <Button variant={"secondary"} onClick={() => setCode("")}>
+                        Clear
+                    </Button>
+                    <FontAdjust currentFontSize={fontSize} setFont={setFontSize} />
+                </div>
                 <MonacoEditor
                     value={code}
                     onChange={setCode}
                     fontSize={fontSize}
-                    height="100%"
+                    height="calc(100% - 40px)"
                 />
             </div>
             {/* Right Pane: Controls and Output */}
-            <div className="md:w-2/5 w-full flex flex-col gap-3 min-h-0">
+            <div className="h-1/4 md:h-auto md:w-2/5 w-full flex flex-col gap-3 min-h-0">
                 {/* Controls Row */}
                 <div className="flex items-center gap-2">
                     <Button
@@ -132,7 +137,7 @@ const CodeEditor: React.FC = () => {
                 <Button variant={"secondary"} onClick={clearOutput}>
                     Clear
                 </Button>
-                <Textarea className="min-h-[500px]" ref={textAreaRef} onKeyDown={handleTextAreaKeyDown} value={text} onChange={handleTextChange} />
+                <Textarea className="h-full" ref={textAreaRef} onKeyDown={handleTextAreaKeyDown} value={text} onChange={handleTextChange} />
             </div>
         </div>
     );
