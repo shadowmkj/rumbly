@@ -15,11 +15,10 @@ const CodeEditor: React.FC = () => {
         };
 
         websocket.current.onmessage = (event) => {
-            setText((prev) => prev + event.data);
+            setOutput((prev) => prev + event.data);
             console.log(event.data.length);
             setOpLength((prev) => prev + event.data.length);
-            setInput(text.slice(opLength));
-        }
+        };
 
         websocket.current.onclose = () => {
             console.log("WebSocket disconnected");
@@ -57,14 +56,15 @@ const CodeEditor: React.FC = () => {
 
     const clearOutput = () => {
         setCodeSent(false);
-        setText("")
+        setOutput("");
         setInput("");
         setOpLength(0);
         window.location.reload();
     };
-    const [text, setText] = useState("");
+
+    const [output, setOutput] = useState("");
     const [code, setCode] = useState(localStorage.getItem("lastCode") || "");
-    const [opLength, setOpLength] = useState(0);
+    const [opLength, setOpLength] = useState(0); // equals output.length
     const [codeSent, setCodeSent] = useState(false);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState<boolean>(false);
@@ -76,19 +76,21 @@ const CodeEditor: React.FC = () => {
             e.preventDefault();
             handleSendMessage();
         }
-    }
+    };
+
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        if (e.target.value.length <= opLength) {
+        // Prevent editing the frozen output portion
+        if (e.target.value.length < opLength) {
             return;
         }
-        setText(e.target.value);
-        setInput(e.target.value.slice(opLength));
-    }
+        const nextInput = e.target.value.slice(opLength);
+        setInput(nextInput);
+    };
 
     const handleSendCode = async () => {
         setLoading(true);
         if (opLength > 0) {
-            setText("")
+            setOutput("");
             setInput("");
             setOpLength(0);
         }
@@ -100,12 +102,18 @@ const CodeEditor: React.FC = () => {
     const handleSendMessage = async () => {
         setLoading(true);
         sendCode(input);
+        setOutput((prev) => prev + input + "\n");
+        setOpLength((prev) => prev + input.length + 1);
         setInput("");
         setLoading(false);
     };
 
     return (
         <div className="h-[80vh] flex flex-col md:flex-row gap-4">
+            {/* <div className="flex flex-col"> */}
+            {/*     <span>Input: {input}</span> */}
+            {/*     <span>Length:{opLength}</span> */}
+            {/* </div> */}
             {/* Left Pane: Editor */}
             <div className="h-3/4 md:h-auto md:w-3/5 w-full border rounded pr-3 pt-3 pl-0 min-h-0">
                 <div className="flex items-center justify-between mb-2">
@@ -137,7 +145,13 @@ const CodeEditor: React.FC = () => {
                 <Button variant={"secondary"} onClick={clearOutput}>
                     Clear
                 </Button>
-                <Textarea className="h-full" ref={textAreaRef} onKeyDown={handleTextAreaKeyDown} value={text} onChange={handleTextChange} />
+                <Textarea
+                    className="h-full"
+                    ref={textAreaRef}
+                    onKeyDown={handleTextAreaKeyDown}
+                    value={output + input}
+                    onChange={handleTextChange}
+                />
             </div>
         </div>
     );
